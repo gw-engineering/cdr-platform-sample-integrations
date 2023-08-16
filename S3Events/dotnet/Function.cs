@@ -93,15 +93,21 @@ public class Function
 
     private async Task<IFlurlResponse> RequestProtectFile(Stream responseStream, string fileName)
     {
-        var response = await GetRetryPolicy()
-            .ExecuteAsync(async () =>
-                await HttpsApiGlasswallComApiV3CdrFile
-                    .WithBasicAuth(_username, _password)
-                    .SetQueryParam("response-content", "noAnalysisReport")
-                    .PostMultipartAsync(mp => mp
-                        .AddFile("file", responseStream, fileName)));
-
-        return response;
+        try
+        {
+            return await GetRetryPolicy()
+                .ExecuteAsync(async () =>
+                    await HttpsApiGlasswallComApiV3CdrFile
+                        .WithBasicAuth(_username, _password)
+                        .SetQueryParam("response-content", "noAnalysisReport")
+                        .PostMultipartAsync(mp => mp
+                            .AddFile("file", responseStream, fileName)));
+        }
+        catch (FlurlHttpException e)
+        {
+            Console.WriteLine($"Unable to rebuild file: {fileName}, API returned status code: {e.StatusCode} Message: {e.Message}");
+            return new FlurlResponse(e.Call.HttpResponseMessage);
+        }
     }
 
     private async Task CreateBucketIfNotExists(string bucketName, S3Region region)
