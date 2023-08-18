@@ -6,6 +6,6 @@ This repository contains sample code that makes use of the CDR Platform's capabi
 
 A lambda function which recieves messages based on S3 Event notification, the function uses the events to identify files to protect.
 
-[dotnet Sample]()
+[dotnet Sample](https://github.com/gw-engineering/cdr-platform-sample-integrations/tree/main/S3Events/dotnet)
 
-[dotnet Lambda Zip]()
+[dotnet Lambda Zip](https://github.com/gw-engineering/cdr-platform-sample-integrations/tree/main/S3Events/dotnet/Build)
