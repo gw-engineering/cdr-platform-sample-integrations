@@ -17,7 +17,7 @@ namespace CdrSampleLambda;
 
 public class Function
 {
-    private readonly string? _cdrUri = "https://api.glasswall.com/api/v3/cdr-file";
+    private readonly string? _cdrUrl;
     private readonly string? _username;
     private readonly string? _password;
     private readonly AmazonS3Client _client;
@@ -31,11 +31,11 @@ public class Function
     {
         _username = Environment.GetEnvironmentVariable("CDR_USERNAME");
         _password = Environment.GetEnvironmentVariable("CDR_PASSWORD");
-        _cdrUri = Environment.GetEnvironmentVariable("CDR_URI");
+        _cdrUrl = Environment.GetEnvironmentVariable("CDR_URL");
 
         if (string.IsNullOrEmpty(_username) || 
             string.IsNullOrEmpty(_password) || 
-            string.IsNullOrEmpty(_cdrUri))
+            string.IsNullOrEmpty(_cdrUrl))
         {
             throw new InvalidOperationException("Unable to load valid CDR Platform configuration - check environment variables.");
         }
@@ -99,7 +99,7 @@ public class Function
         {
             return await GetRetryPolicy()
                 .ExecuteAsync(async () =>
-                    await _cdrUri
+                    await _cdrUrl
                         .WithBasicAuth(_username, _password)
                         .SetQueryParam("response-content", "noAnalysisReport")
                         .PostMultipartAsync(mp => mp
