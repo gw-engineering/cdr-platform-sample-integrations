@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/S3Events/dotnet/obj
+/S3Events/dotnet/bin
+/S3Events/dotnet/.vs
+S3Events/dotnet/aws-lambda-tools-defaults.json
