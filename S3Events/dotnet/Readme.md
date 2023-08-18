@@ -2,6 +2,8 @@
 
 This starter project responds to events on an Amazon SQS queue containing S3 Event Notifications.
 
+The project targets the .NET6 runtime - which is currently the latest runtime supported by Lambda functions.
+
 The notifications are used to trigger the following workflow:
 
 * Identify a file in an S3 bucket.

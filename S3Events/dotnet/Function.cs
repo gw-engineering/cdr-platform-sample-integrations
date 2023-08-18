@@ -17,8 +17,7 @@ namespace CdrSampleLambda;
 
 public class Function
 {
-    private const string HttpsApiGlasswallComApiV3CdrFile = "https://api.glasswall.com/api/v3/cdr-file";
-
+    private readonly string? _cdrUri = "https://api.glasswall.com/api/v3/cdr-file";
     private readonly string? _username;
     private readonly string? _password;
     private readonly AmazonS3Client _client;
@@ -32,10 +31,13 @@ public class Function
     {
         _username = Environment.GetEnvironmentVariable("CDR_USERNAME");
         _password = Environment.GetEnvironmentVariable("CDR_PASSWORD");
-        
-        if (_username == null || _password == null)
+        _cdrUri = Environment.GetEnvironmentVariable("CDR_URI");
+
+        if (string.IsNullOrEmpty(_username) || 
+            string.IsNullOrEmpty(_password) || 
+            string.IsNullOrEmpty(_cdrUri))
         {
-            throw new Exception("Unable to load CDR Platform Credentials");
+            throw new InvalidOperationException("Unable to load valid CDR Platform configuration - check environment variables.");
         }
 
         _client = new AmazonS3Client();
@@ -45,12 +47,12 @@ public class Function
     /// This method is called for every Lambda invocation. This method takes in an SQS event object and can be used 
     /// to respond to SQS messages.
     /// </summary>
-    /// <param name="evnt"></param>
+    /// <param name="event"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    public async Task FunctionHandler(SQSEvent evnt, ILambdaContext context)
+    public async Task FunctionHandler(SQSEvent @event, ILambdaContext context)
     {
-        foreach(var message in evnt.Records)
+        foreach(var message in @event.Records)
         {
             await ProcessMessageAsync(S3EventNotification.ParseJson(message.Body), context);
         }
@@ -97,7 +99,7 @@ public class Function
         {
             return await GetRetryPolicy()
                 .ExecuteAsync(async () =>
-                    await HttpsApiGlasswallComApiV3CdrFile
+                    await _cdrUri
                         .WithBasicAuth(_username, _password)
                         .SetQueryParam("response-content", "noAnalysisReport")
                         .PostMultipartAsync(mp => mp
