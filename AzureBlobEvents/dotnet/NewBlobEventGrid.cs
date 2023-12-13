@@ -34,14 +34,26 @@ public class NewBlobEventGrid
 
         var eventGridEvent = EventGridEvent.Parse(new BinaryData(myQueueItem));
 
-        if (!IsSupportedEventType(eventGridEvent)) return;
+        if (!IsSupportedEventType(eventGridEvent))
+        {
+            log.LogInformation($"Unsupported Event Grid Event Type: {eventGridEvent}");
+            return;
+        }
 
         var eventData = eventGridEvent.Data.ToObjectFromJson<StorageBlobCreatedEventData>();
 
-        var protectResponse = await _protectFileService.ProtectFile(new Uri(eventData.Url));
+        try
+        {
+            var protectResponse = await _protectFileService.ProtectFile(new Uri(eventData.Url));
 
-        await _fileWriterService.WriteProtectedFile(protectResponse.BlobContainerName, protectResponse.Name,
-            await protectResponse.GetResponseStream());
+            await _fileWriterService.WriteProtectedFile(protectResponse.BlobContainerName, protectResponse.Name,
+                await protectResponse.GetResponseStream());
+        }
+        catch (Exception e)
+        {
+            log.LogError(e, $"Unable to process file: {eventData.Url}");
+            throw;
+        }
     }
 
     private static bool IsSupportedEventType(EventGridEvent eventGridEvent)
