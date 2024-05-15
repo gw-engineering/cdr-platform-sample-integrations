@@ -47,6 +47,16 @@ public class Function : ICloudEventFunction<StorageObjectData>
         {
             await ProtectBucketFileAsync(cloudEvent, data, cancellationToken);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "C# Google Storage Event Trigger failed for file created {created:s} and updated {updated:s} ",
+                data.TimeCreated?.ToDateTimeOffset(),
+                data.Updated?.ToDateTimeOffset());
+
+            throw;
+        }
         finally
         {
             _logger.LogInformation(
