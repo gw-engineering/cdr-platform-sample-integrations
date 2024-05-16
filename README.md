@@ -9,3 +9,7 @@ A lambda function which recieves messages based on S3 Event notification, the fu
 [dotnet Sample](https://github.com/gw-engineering/cdr-platform-sample-integrations/tree/main/S3Events/dotnet)
 
 [dotnet Lambda Zip](https://github.com/gw-engineering/cdr-platform-sample-integrations/tree/main/S3Events/dotnet/Build)
+
+# Google Cloud Run
+
+[dotnet Google Cloud Run Sample](https://github.com/gw-engineering/cdr-platform-sample-integrations/tree/main/GCloudRun/dotnet)
